@@ -3,13 +3,11 @@ package auth
 import (
 	"context"
 	"errors"
-	"sso/internal/services/auth"
-	"sso/internal/storage"
-
 	ssov1 "github.com/Faitese/GoProto/gen/go/sso"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"sso/internal/services/auth"
 )
 
 type Auth interface {
@@ -51,7 +49,7 @@ func (s *serverAPI) Login(
 	token, err := s.auth.Login(ctx, req.GetEmail(), req.GetPassword(), int(req.GetAppId()))
 	if err != nil {
 		if errors.Is(err, auth.ErrInvalidCredentials) {
-			return nil, status.Error(codes.InvalidArgument, "invalid Credentials")
+			return nil, status.Error(codes.InvalidArgument, "invalid email or password")
 
 		}
 		return nil, status.Error(codes.Internal, "internal error")
@@ -94,7 +92,7 @@ func (s *serverAPI) IsAdmin(
 
 	isAdmin, err := s.auth.IsAdmin(ctx, req.GetUserId())
 	if err != nil {
-		if errors.Is(err, storage.ErrUserNotFound) {
+		if errors.Is(err, auth.ErrUserNotFound) {
 			return nil, status.Error(codes.NotFound, "user not found")
 		}
 		return nil, status.Error(codes.Internal, "internal error")
