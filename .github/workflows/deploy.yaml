@@ -51,6 +51,9 @@ jobs:
       - name: Remove old systemd service file
         run: |
           ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ env.HOST }} "rm -f /etc/systemd/system/grpc-auth.service"
+      - name: Set GLIBC to right version
+        run: |
+          export LD_LIBRARY_PATH="$HOME/glibc-2.34/lib"
       - name: List workspace contents
         run: |
           echo "Listing deployment folder contents:"
